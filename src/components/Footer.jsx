@@ -1,17 +1,24 @@
 import Link from "next/link";
+import { useLanguage } from "@/lib/languageContext";
+import { getCopy } from "@/lib/copy";
 
 const Footer = () => {
+  const { language } = useLanguage();
+  const t = getCopy(language);
+
   return (
-    <footer className="w-full bg-base-300 py-6">
-      <div className="text-center">
-        <p className="text-gray-500">© 2024 Your Recipe Website</p>
-        <div className="flex justify-center space-x-4 mt-2">
-          <a href="#" className="hover:text-blue-500">
-            Privacy Policy
-          </a>
-          <Link href="/impressum" className="hover:text-blue-500">
-            Impressum
+    <footer className="w-full border-t border-base-300/80 bg-base-100/80 backdrop-blur py-10">
+      <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <p className="text-lg font-semibold text-neutral">{t.brand}</p>
+          <p className="text-sm text-neutral/70">{t.footer.tagline}</p>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/impressum" className="hover:text-primary font-medium">
+            {t.footer.impressum}
           </Link>
+          <span className="text-neutral/60">•</span>
+          <p className="text-neutral/70">{t.footer.copyright}</p>
         </div>
       </div>
     </footer>

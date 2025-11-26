@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import { nanoid } from "nanoid";
 import useLocalStorageState from "use-local-storage-state";
 import { SWRConfig } from "swr";
+import { LanguageProvider } from "@/lib/languageContext";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -18,6 +19,13 @@ export default function App({ Component, pageProps }) {
       defaultValue: [],
     }
   );
+
+  const [language, setLanguage] = useLocalStorageState("language", {
+    defaultValue: "en",
+  });
+
+  const toggleLanguage = () =>
+    setLanguage((prev) => (prev === "en" ? "de" : "en"));
 
   function handleToggleFavorites(data) {
     setFavoriteRecipes((prevFavoriteRecipes) => {
@@ -82,17 +90,19 @@ export default function App({ Component, pageProps }) {
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <Layout>
-        <Component
-          {...pageProps}
-          onUpdateRecipe={handleUpdateRecipe}
-          onSubmit={handleSubmit}
-          createdRecipes={createdRecipes}
-          onDeleteRecipe={handleDeleteRecipe}
-          onToggleFavorites={handleToggleFavorites}
-          favoriteRecipes={favoriteRecipes}
-        />
-      </Layout>
+      <LanguageProvider value={{ language, toggleLanguage }}>
+        <Layout>
+          <Component
+            {...pageProps}
+            onUpdateRecipe={handleUpdateRecipe}
+            onSubmit={handleSubmit}
+            createdRecipes={createdRecipes}
+            onDeleteRecipe={handleDeleteRecipe}
+            onToggleFavorites={handleToggleFavorites}
+            favoriteRecipes={favoriteRecipes}
+          />
+        </Layout>
+      </LanguageProvider>
     </SWRConfig>
   );
 }

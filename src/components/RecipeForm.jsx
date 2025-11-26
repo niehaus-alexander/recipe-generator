@@ -1,17 +1,31 @@
+import { useLanguage } from "@/lib/languageContext";
+import { getCopy } from "@/lib/copy";
+
 const RecipeForm = ({ onSubmit }) => {
+  const { language } = useLanguage();
+  const t = getCopy(language);
+  const difficultyOptions =
+    language === "de" ? ["leicht", "mittel", "schwer"] : ["easy", "moderate", "hard"];
+  const durationOptions = ["15 min.", "30 min.", "45 min.", "60 min.", "90 min.", "120 min."];
+
   return (
-    <div className="max-w-screen-lg mx-auto flex justify-center items-center">
+    <div className="max-w-4xl mx-auto flex justify-center items-center px-4 sm:px-6">
       <form
         onSubmit={onSubmit}
-        className="border-4 border-solid border-base-300 flex flex-col justify-center items-center w-full sm:w-2/3 gap-2 m-6 p-6 rounded-md"
+        className="glass-surface border border-base-300/60 flex flex-col justify-center items-center w-full gap-3 sm:gap-4 m-6 p-6 sm:p-8 rounded-2xl"
       >
-        <legend className=" text-lg font-semibold">Add a new recipe:</legend>
+        <legend className="text-2xl font-semibold text-neutral text-center">
+          {t.form.title}
+        </legend>
+        <p className="text-sm text-neutral/70 text-center mb-2">
+          {t.form.subtitle}
+        </p>
         <input
           name="name"
           id="name"
           type="text"
-          placeholder="Recipe Name"
-          className="input input-bordered input-primary w-full max-w-xs"
+          placeholder={t.form.name}
+          className="input input-bordered w-full max-w-xl"
           required
         />
 
@@ -19,42 +33,39 @@ const RecipeForm = ({ onSubmit }) => {
           name="cuisine"
           id="cuisine"
           type="text"
-          placeholder="Cuisine"
-          className="input input-bordered input-primary w-full max-w-xs"
+          placeholder={t.form.cuisine}
+          className="input input-bordered w-full max-w-xl"
         />
         <select
-          defaultValue={"Difficulty"}
-          className="select select-primary w-full max-w-xs"
+          defaultValue={t.form.difficulty}
+          className="select select-bordered w-full max-w-xl"
           name="difficulty"
           id="difficulty"
         >
-          <option disabled>Difficulty</option>
-          <option>easy</option>
-          <option>moderate</option>
-          <option>hard</option>
+          <option disabled>{t.form.difficulty}</option>
+          {difficultyOptions.map((option) => (
+            <option key={option}>{option}</option>
+          ))}
         </select>
 
         <select
-          defaultValue={"Duration"}
-          className="select select-primary w-full max-w-xs"
+          defaultValue={t.form.duration}
+          className="select select-bordered w-full max-w-xl"
           name="timeInMinutes"
           id="timeInMinutes"
         >
-          <option disabled>Duration</option>
-          <option>15 min.</option>
-          <option>30 min.</option>
-          <option>45 min.</option>
-          <option>60 min.</option>
-          <option>90 min.</option>
-          <option>120 min.</option>
+          <option disabled>{t.form.duration}</option>
+          {durationOptions.map((option) => (
+            <option key={option}>{option}</option>
+          ))}
         </select>
         <select
-          defaultValue={"Portions"}
-          className="select select-primary w-full max-w-xs"
+          defaultValue={t.form.portions}
+          className="select select-bordered w-full max-w-xl"
           name="portions"
           id="portions"
         >
-          <option disabled>Portions</option>
+          <option disabled>{t.form.portions}</option>
           <option>1</option>
           <option>2</option>
           <option>3</option>
@@ -65,32 +76,39 @@ const RecipeForm = ({ onSubmit }) => {
           <option>8</option>
         </select>
 
-        <div className="w-full max-w-xs">
-          <h3 className="text-lg font-semibold mb-4 ">Ingredients:</h3>
+        <div className="w-full max-w-xl">
+          <h3 className="text-lg font-semibold mb-3 text-neutral">
+            {t.form.ingredients}
+          </h3>
           <textarea
             name="ingredients"
             id="ingredients"
             rows={4}
-            className="textarea textarea-primary w-full max-w-xs"
-            placeholder={`4 onions, garlic, 2 bell pepper`}
+            className="textarea textarea-bordered w-full max-w-xl"
+            placeholder={t.form.placeholderIngredients}
           ></textarea>
         </div>
-        <div className="w-full max-w-xs">
-          <h3 className="text-lg font-semibold mb-4 ">Preparation:</h3>
+        <div className="w-full max-w-xl">
+          <h3 className="text-lg font-semibold mb-3 text-neutral">
+            {t.form.preparation}
+          </h3>
           <textarea
             name="preparation"
             id="preparation"
             rows={4}
-            className="textarea textarea-primary w-full max-w-xs"
-            placeholder="1. Cut onions without crying..."
+            className="textarea textarea-bordered w-full max-w-xl"
+            placeholder={t.form.placeholderPreparation}
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Create Recipe!
+        <button
+          type="submit"
+          className="btn btn-primary text-primary-content shadow-md shadow-primary/30 mt-2 w-full max-w-xl"
+        >
+          {t.form.submit}
         </button>
-        <h3 className="text-lg font-semibold">
-          Scroll down to see your creations!
-        </h3>
+        <p className="text-sm text-neutral/70">
+          {t.form.hint}
+        </p>
       </form>
     </div>
   );

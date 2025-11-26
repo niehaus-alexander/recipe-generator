@@ -1,10 +1,10 @@
 const AreaFilter = ({ onCuisineFilter, selectedCuisine }) => {
   return (
-    <div className="max-w-screen-lg mx-auto flex justify-center items-center">
-      <form className="mt-6 w-full flex justify-center items-center">
+    <div className="max-w-4xl mx-auto flex justify-center items-center px-4 sm:px-6">
+      <form className="mt-8 w-full flex justify-center items-center">
         <select
           value={selectedCuisine}
-          className="select select-primary w-80"
+          className="select select-bordered w-full max-w-xl glass-surface text-neutral"
           name="cuisine"
           id="cuisine"
           onChange={onCuisineFilter}

@@ -1,12 +1,16 @@
 import { useState } from "react";
 import Card from "@/components/Card";
 import useSWR from "swr";
+import { useLanguage } from "@/lib/languageContext";
+import { getCopy } from "@/lib/copy";
 
 export default function RandomRecipePickerPage({
   favoriteRecipes,
   onToggleFavorites,
 }) {
   const [randomFavoritesRecipe, setRandomFavoritesRecipe] = useState(null);
+  const { language } = useLanguage();
+  const t = getCopy(language);
 
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     `https://www.themealdb.com/api/json/v1/1/random.php`,
@@ -48,78 +52,95 @@ export default function RandomRecipePickerPage({
   }
 
   return (
-    <div className="w-full min-h-screen bg-base-200">
-      <div className="max-w-screen-lg mx-auto px-4 py-10">
-        <h2 className="text-xl pt-6 text-center">
-          Don&apos;t feel like thinking about what to cook? On this page we
-          randomly pick a recipe from your{" "}
-          <span className="font-bold">favorites</span> and from the{" "}
-          <a
-            href="https://www.themealdb.com/api.php"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-500 hover:underline"
-          >
-            mealDB database
-          </a>
-          .
-        </h2>
+    <div className="w-full min-h-screen bg-base-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
+        <header className="text-center max-w-3xl mx-auto space-y-3">
+          <p className="text-sm font-semibold text-primary uppercase tracking-[0.2em]">
+            {t.randomizer.eyebrow}
+          </p>
+          <h1 className="text-4xl font-bold text-neutral">
+            {t.randomizer.title}
+          </h1>
+          <p className="text-neutral/70">
+            {t.randomizer.body}
+          </p>
+        </header>
 
-        <div className="w-full p-6 flex justify-center items-center flex-col mb-6">
-          <h2 className="text-center font-semibold text-3xl mb-10">
-            Favorites
-          </h2>
-
-          {favoriteRecipes.length === 0 ? (
-            <p className="text-center">
-              You have no favorite recipes. Go to Creator or Inspiration to add
-              some by clicking on the star!
-            </p>
-          ) : (
-            <>
-              <button
-                onClick={handlePickRandomFavoritesRecipe}
-                className="btn btn-primary mb-6  hover:bg-secondary  rounded-lg shadow-md transition-transform transform hover:scale-105"
-              >
-                Pick random recipe!
-              </button>
-              {randomFavoritesRecipe && (
-                <Card
-                  onToggleFavorites={onToggleFavorites}
-                  data={randomFavoritesRecipe}
-                  favoriteRecipes={favoriteRecipes}
-                />
-              )}
-            </>
-          )}
-        </div>
-
-        <div className="w-full p-6 flex justify-center items-center flex-col">
-          <h2 className="text-center font-semibold text-3xl mb-10">
-            MealDB Database
-          </h2>
-          <button
-            onClick={handleFetchRandomRecipe}
-            className="btn btn-primary mb-6 hover:bg-secondary  rounded-lg shadow-md transition-transform transform hover:scale-105"
-          >
-            Pick random recipe!
-          </button>
-          {isLoading && (
-            <div className="flex justify-center items-center">
-              <span className="loading loading-spinner loading-lg text-primary"></span>
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="glass-surface border border-base-300/60 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-neutral">
+                {t.randomizer.favoritesTitle}
+              </h2>
+              <span className="badge badge-outline border-primary/60 bg-primary/10 text-primary">
+                {favoriteRecipes.length} {t.randomizer.favoritesBadge}
+              </span>
             </div>
-          )}
-          {error && (
-            <p className="text-red-600 font-semibold">Error loading recipe.</p>
-          )}
-          {randomFetchedRecipe && (
-            <Card
-              onToggleFavorites={onToggleFavorites}
-              data={randomFetchedRecipe}
-              favoriteRecipes={favoriteRecipes}
-            />
-          )}
-        </div>
+            <p className="text-neutral/70 mb-4">
+              {t.randomizer.favoritesCopy}
+            </p>
+
+            {favoriteRecipes.length === 0 ? (
+              <p className="text-neutral/60">{t.randomizer.noFavorites}</p>
+            ) : (
+              <>
+                <button
+                  onClick={handlePickRandomFavoritesRecipe}
+                  className="btn btn-primary text-primary-content shadow-md shadow-primary/30 mb-6"
+                >
+                  {t.randomizer.pickFavorite}
+                </button>
+                {randomFavoritesRecipe && (
+                  <Card
+                    onToggleFavorites={onToggleFavorites}
+                    data={randomFavoritesRecipe}
+                    favoriteRecipes={favoriteRecipes}
+                  />
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="glass-surface border border-base-300/60 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-neutral">
+                {t.randomizer.mealdbTitle}
+              </h2>
+              <a
+                href="https://www.themealdb.com/api.php"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                Source
+              </a>
+            </div>
+            <p className="text-neutral/70 mb-4">
+              {t.randomizer.mealdbCopy}
+            </p>
+            <button
+              onClick={handleFetchRandomRecipe}
+              className="btn btn-primary text-primary-content shadow-md shadow-primary/30 mb-6"
+            >
+              {t.randomizer.pickMealdb}
+            </button>
+            {isLoading && (
+              <div className="flex justify-center items-center">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
+              </div>
+            )}
+            {error && (
+              <p className="text-error font-semibold">{t.randomizer.error}</p>
+            )}
+            {randomFetchedRecipe && (
+              <Card
+                onToggleFavorites={onToggleFavorites}
+                data={randomFetchedRecipe}
+                favoriteRecipes={favoriteRecipes}
+              />
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

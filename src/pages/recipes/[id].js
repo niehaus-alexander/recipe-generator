@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { useLanguage } from "@/lib/languageContext";
+import { getCopy } from "@/lib/copy";
 
 export default function RecipeDetailsPage({ createdRecipes, onUpdateRecipe }) {
   const router = useRouter();
@@ -8,8 +10,8 @@ export default function RecipeDetailsPage({ createdRecipes, onUpdateRecipe }) {
   const [recipe, setRecipe] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({});
-
-  console.log(recipe);
+  const { language } = useLanguage();
+  const t = getCopy(language);
 
   function mapMealDBToRecipe(mealData) {
     const ingredients = [];
@@ -47,14 +49,28 @@ export default function RecipeDetailsPage({ createdRecipes, onUpdateRecipe }) {
     }
   }, [id, data, createdRecipes]);
 
-  if (error) return <div>Error loading recipe.</div>;
+  if (error)
+    return (
+      <div className="text-center pt-10 text-error">
+        {language === "de"
+          ? "Fehler beim Laden des Rezepts."
+          : "Error loading recipe."}
+      </div>
+    );
   if (!recipe)
     return (
       <div className="flex justify-center items-center">
         <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
-  if (!id) return <div>Error: Recipe ID not found</div>;
+  if (!id)
+    return (
+      <div className="text-center pt-10 text-error">
+        {language === "de"
+          ? "Fehler: Rezept-ID nicht gefunden."
+          : "Error: Recipe ID not found"}
+      </div>
+    );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,129 +107,163 @@ export default function RecipeDetailsPage({ createdRecipes, onUpdateRecipe }) {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200">
-      <div className="card w-full max-w-lg bg-base-100 shadow-xl p-6 m-6">
-        {isEditing ? (
-          <>
-            <h2 className="card-title text-center text-3xl font-bold mb-4">
-              <input
-                className="input input-bordered w-full"
-                name="name"
-                value={editFormData.name}
-                onChange={handleInputChange}
-              />
-            </h2>
-            <div className="divider"></div>
-            <p className="text-lg mb-2">
-              <span className="font-semibold">Cuisine:</span>{" "}
-              <input
-                className="input input-bordered w-full"
-                name="cuisine"
-                value={editFormData.cuisine}
-                onChange={handleInputChange}
-              />
-            </p>
+    <div className="min-h-screen bg-base-100">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+        <div className="glass-surface border border-base-300/70 rounded-2xl shadow-xl p-6 sm:p-8">
+          {isEditing ? (
+            <>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <input
+                  className="input input-bordered w-full text-3xl font-bold"
+                  name="name"
+                  value={editFormData.name}
+                  onChange={handleInputChange}
+                />
+              </div>
 
-            {recipe.ownRecipe && (
-              <>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Duration:</span>{" "}
-                  <input
-                    className="input input-bordered w-full"
-                    name="timeInMinutes"
-                    value={editFormData.timeInMinutes}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <input
+                  className="input input-bordered w-full sm:w-auto"
+                  name="cuisine"
+                  value={editFormData.cuisine}
+                  onChange={handleInputChange}
+                  placeholder={t.form.cuisine}
+                />
+                {recipe.ownRecipe && (
+                  <>
+                    <input
+                      className="input input-bordered w-full sm:w-auto"
+                      name="timeInMinutes"
+                      value={editFormData.timeInMinutes}
+                      onChange={handleInputChange}
+                      placeholder={t.form.duration}
+                    />
+                    <input
+                      className="input input-bordered w-full sm:w-auto"
+                      name="difficulty"
+                      value={editFormData.difficulty}
+                      onChange={handleInputChange}
+                      placeholder={t.form.difficulty}
+                    />
+                    <input
+                      className="input input-bordered w-full sm:w-auto"
+                      name="portions"
+                      value={editFormData.portions}
+                      onChange={handleInputChange}
+                      placeholder={t.form.portions}
+                    />
+                  </>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text text-neutral font-semibold">
+                      {t.recipeDetail.ingredients}
+                    </span>
+                  </div>
+                  <textarea
+                    className="textarea textarea-bordered w-full"
+                    name="ingredients"
+                    value={editFormData.ingredients}
                     onChange={handleInputChange}
+                    rows={4}
                   />
-                </p>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Difficulty:</span>{" "}
-                  <input
-                    className="input input-bordered w-full"
-                    name="difficulty"
-                    value={editFormData.difficulty}
+                </label>
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text text-neutral font-semibold">
+                      {t.recipeDetail.preparation}
+                    </span>
+                  </div>
+                  <textarea
+                    className="textarea textarea-bordered w-full"
+                    name="preparation"
+                    value={editFormData.preparation}
                     onChange={handleInputChange}
+                    rows={5}
                   />
-                </p>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Portions:</span>{" "}
-                  <input
-                    className="input input-bordered w-full"
-                    name="portions"
-                    value={editFormData.portions}
-                    onChange={handleInputChange}
-                  />
-                </p>
-              </>
-            )}
-            <p className="text-lg mb-2">
-              <span className="font-semibold">Ingredients:</span>{" "}
-              <textarea
-                className="textarea textarea-bordered w-full"
-                name="ingredients"
-                value={editFormData.ingredients}
-                onChange={handleInputChange}
-              />
-            </p>
-            <p className="text-lg mb-2">
-              <span className="font-semibold">Preparation:</span>{" "}
-              <textarea
-                className="textarea textarea-bordered w-full"
-                name="preparation"
-                value={editFormData.preparation}
-                onChange={handleInputChange}
-              />
-            </p>
-            <div className="flex justify-end gap-4 mt-4">
-              <button className="btn btn-secondary" onClick={handleCancel}>
-                Cancel
-              </button>
-              <button className="btn btn-primary" onClick={handleSave}>
-                Save
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2 className="card-title text-center text-3xl font-bold mb-4">
-              {recipe.name}
-            </h2>
-            <div className="divider"></div>
-            <p className="text-lg mb-2">
-              <span className="font-semibold">Cuisine:</span> {recipe.cuisine}
-            </p>
-            {recipe.ownRecipe && (
-              <>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Duration:</span>{" "}
-                  {recipe.timeInMinutes} minutes
-                </p>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Difficulty:</span>{" "}
-                  {recipe.difficulty}
-                </p>
-                <p className="text-lg mb-2">
-                  <span className="font-semibold">Portions:</span>{" "}
-                  {recipe.portions}
-                </p>
-              </>
-            )}
-            <p className="text-lg mb-2">
-              <span className="font-semibold">Ingredients:</span>{" "}
-              {recipe.ingredients}
-            </p>
-            <p className="text-lg mb-4">
-              <span className="font-semibold">Preparation:</span>{" "}
-              {recipe.preparation}
-            </p>
-            {recipe.ownRecipe && (
-              <div className="flex justify-end">
-                <button className="btn btn-primary " onClick={toggleEditMode}>
-                  Edit Recipe
+                </label>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button className="btn btn-ghost" onClick={handleCancel}>
+                  {t.recipeDetail.cancel}
+                </button>
+                <button
+                  className="btn btn-primary text-primary-content"
+                  onClick={handleSave}
+                >
+                  {t.recipeDetail.save}
                 </button>
               </div>
-            )}
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <div>
+                  <p className="uppercase text-xs tracking-[0.2em] text-primary mb-1">
+                    {recipe.ownRecipe
+                      ? t.recipeDetail.yourCreation
+                      : t.recipeDetail.fetched}
+                  </p>
+                  <h1 className="text-3xl sm:text-4xl font-bold text-neutral">
+                    {recipe.name}
+                  </h1>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="badge badge-outline border-primary/60 bg-primary/10 text-primary">
+                    {recipe.cuisine}
+                  </span>
+                  {recipe.ownRecipe && recipe.timeInMinutes && (
+                    <span className="badge badge-outline border-amber-400/60 bg-amber-100/60 text-amber-900">
+                      {recipe.timeInMinutes} min
+                    </span>
+                  )}
+                  {recipe.ownRecipe && recipe.difficulty && (
+                    <span className="badge badge-outline border-neutral/30 bg-neutral/5 capitalize">
+                      {recipe.difficulty}
+                    </span>
+                  )}
+                  {recipe.ownRecipe && recipe.portions && (
+                    <span className="badge badge-outline border-primary/40 bg-primary/5">
+                      {recipe.portions} {t.form.portions.toLowerCase()}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4 text-neutral/90">
+                <div>
+                  <p className="text-sm font-semibold text-neutral mb-1">
+                    {t.recipeDetail.ingredients}
+                  </p>
+                  <p className="leading-relaxed whitespace-pre-line">
+                    {recipe.ingredients}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-neutral mb-1">
+                    {t.recipeDetail.preparation}
+                  </p>
+                  <p className="leading-relaxed whitespace-pre-line">
+                    {recipe.preparation}
+                  </p>
+                </div>
+              </div>
+              {recipe.ownRecipe && (
+                <div className="flex justify-end mt-6">
+                  <button
+                    className="btn btn-primary text-primary-content"
+                    onClick={toggleEditMode}
+                  >
+                    {t.recipeDetail.edit}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
